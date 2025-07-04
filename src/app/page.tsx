@@ -1,7 +1,6 @@
 import Image from "next/image";
 
-import RegisterPasskey from "./components/register-passkey";
-import AuthenticatePasskey from "./components/authenticate-passkey";
+import PasskeysManagement from "../components/passkeys-management";
 
 export default function Home() {
   return (
@@ -15,8 +14,7 @@ export default function Home() {
           height={128}
           priority
         />
-        <RegisterPasskey />
-        <AuthenticatePasskey />
+        <PasskeysManagement />
       </main>
     </div>
   );

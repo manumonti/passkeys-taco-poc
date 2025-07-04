@@ -1,14 +1,12 @@
 "use server";
 
-import type {
-  PublicKeyCredentialCreationOptionsJSON,
-  RegistrationResponseJSON,
-} from "@simplewebauthn/types";
 import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
   VerifiedRegistrationResponse,
   verifyRegistrationResponse,
+  type PublicKeyCredentialCreationOptionsJSON,
+  type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
 import { isoUint8Array } from "@simplewebauthn/server/helpers";
 
@@ -39,14 +37,14 @@ export const verifyRegistration = async (
   credential: RegistrationResponseJSON,
   challenge: string
 ): Promise<VerifiedRegistrationResponse> => {
-  let verification: VerifiedRegistrationResponse;
+  let verificationResponse: VerifiedRegistrationResponse;
 
   if (credential == null) {
     throw new Error("Invalid credentials");
   }
 
   try {
-    verification = await verifyRegistrationResponse({
+    verificationResponse = await verifyRegistrationResponse({
       response: credential,
       expectedChallenge: challenge,
       expectedOrigin: "http://localhost:3000",
@@ -57,9 +55,9 @@ export const verifyRegistration = async (
     throw error;
   }
 
-  if (!verification.verified) {
+  if (!verificationResponse.verified) {
     throw new Error("Registration verification failed");
   }
 
-  return verification;
+  return verificationResponse;
 };

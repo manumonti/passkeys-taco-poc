@@ -1,11 +1,19 @@
 "use client";
 
 import { Wallet } from "ethers";
-import { getRegistrationOptions, verifyRegistration } from "../lib/register";
-import { startRegistration } from "@simplewebauthn/browser";
-import { RegistrationResponseJSON } from "@simplewebauthn/types";
+import { getRegistrationOptions, verifyRegistration } from "../lib/registry";
+import {
+  startRegistration,
+  type WebAuthnCredential,
+} from "@simplewebauthn/browser";
+import { Dispatch, SetStateAction } from "react";
 
-export default function RegisterPasskey() {
+interface RegisterPasskeyProps {
+  setUserCredential: Dispatch<SetStateAction<WebAuthnCredential | null>>;
+}
+export default function RegisterPasskey({
+  setUserCredential,
+}: RegisterPasskeyProps) {
   async function handleClick() {
     console.debug("Registring new Passkey...");
 
@@ -25,8 +33,9 @@ export default function RegisterPasskey() {
     );
 
     console.debug("Starting registration (passkey interaction)...");
-    const registrationResponse: RegistrationResponseJSON =
-      await startRegistration({ optionsJSON: registrationOptions });
+    const registrationResponse = await startRegistration({
+      optionsJSON: registrationOptions,
+    });
     console.debug(
       "Registration response from passkey:",
       JSON.stringify(registrationResponse, null, 2)
@@ -41,6 +50,14 @@ export default function RegisterPasskey() {
       "Verification response from server:",
       JSON.stringify(verificationResponse, null, 2)
     );
+
+    if (!verificationResponse.registrationInfo) {
+      console.error(
+        "Registration verification failed: no registration info found"
+      );
+    } else {
+      setUserCredential(verificationResponse.registrationInfo.credential);
+    }
   }
 
   return (
