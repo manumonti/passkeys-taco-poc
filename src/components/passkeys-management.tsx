@@ -1,7 +1,7 @@
 "use client";
 
-import RegisterPasskey from "../components/register-passkey";
-import AuthenticatePasskey from "../components/authenticate-passkey";
+import RegisterPasskey from "../components/register-button";
+import AuthenticatePasskey from "../components/authenticate-button";
 import { Fragment, useState } from "react";
 import { type WebAuthnCredential } from "@simplewebauthn/server";
 
