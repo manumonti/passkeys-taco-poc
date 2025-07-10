@@ -16,10 +16,10 @@ export const getRegistrationOptions = async (
   const registrationOptionsParameters: GenerateRegistrationOptionsOpts = {
     rpName: "Passkeys TACo PoC",
     rpID: "localhost",
-    userName: "manumonti",
+    userName: ephemeralWalletAddress,
     userID: isoUint8Array.fromASCIIString(ephemeralWalletAddress),
     // challenge: "",
-    userDisplayName: "Manuel Montenegro",
+    userDisplayName: ephemeralWalletAddress,
     timeout: 60000,
     // excludeCredentials: [],
     // TODO: use algorithms with a good compatibility with solidity
