@@ -38,7 +38,7 @@ export const registerEncryptor = async (encryptorAddress: AddressLike) => {
   const globalAllowListContract = new Contract(
     globalAllowListAddres,
     authorizeABI,
-    authorityWallet,
+    authorityWallet
   );
 
   console.debug(
@@ -48,7 +48,10 @@ export const registerEncryptor = async (encryptorAddress: AddressLike) => {
     process.env.RITUAL_ID
   );
 
-  const tx = await globalAllowListContract.authorize(parseInt(process.env.RITUAL_ID), [encryptorAddress]);
+  const tx = await globalAllowListContract.authorize(
+    parseInt(process.env.RITUAL_ID),
+    [encryptorAddress]
+  );
   console.debug(`TX: https://amoy.polygonscan.com/tx/${tx.hash}/`);
   console.debug("Waiting for tx confirmation...");
 
