@@ -8,7 +8,7 @@ import {
   type WebAuthnCredential,
 } from "@simplewebauthn/browser";
 import { getRegistrationOptions, verifyRegistration } from "../lib/registry";
-import { registerEncryptor } from "../lib/encryptor-registration";
+import { registerEncryptor } from "../lib/onchain-registration";
 
 interface RegisterPasskeyProps {
   setUserCredential: Dispatch<SetStateAction<WebAuthnCredential | null>>;
