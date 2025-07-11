@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
@@ -13,12 +14,15 @@ import { isoUint8Array } from "@simplewebauthn/server/helpers";
 export const getRegistrationOptions = async (
   ephemeralWalletAddress: string
 ): Promise<PublicKeyCredentialCreationOptionsJSON> => {
+  const salt = await bcrypt.genSalt();
+  const challenge = await bcrypt.hash(ephemeralWalletAddress, salt);
+
   const registrationOptionsParameters: GenerateRegistrationOptionsOpts = {
     rpName: "Passkeys TACo PoC",
     rpID: "localhost",
     userName: ephemeralWalletAddress,
     userID: isoUint8Array.fromASCIIString(ephemeralWalletAddress),
-    // challenge: "",
+    challenge: isoUint8Array.fromASCIIString(challenge),
     userDisplayName: ephemeralWalletAddress,
     timeout: 60000,
     // excludeCredentials: [],
