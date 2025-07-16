@@ -26,3 +26,29 @@ pnpm dev
 
 [http://localhost:3000](http://localhost:3000)
 
+## Diagrams
+
+### Passkey registration flow
+
+```mermaid
+sequenceDiagram
+    participant Authenticator
+    participant Client
+    participant Server
+    participant Database
+    Client->>Client: generate ephemeral wallet
+    Client->>Server: getRegistrationOptions(eph. wallet address)
+    Server->>Server: generate RegistrationOptions<br/>(including custom challenge)
+    Server->>Database: save RegistrationOptions<br/>for ephemeral wallet
+    Server->>Client: RegistrationOptions
+    Client->>Authenticator: startRegistration(RegistrationOptions)
+    Authenticator->>Authenticator: Generate Priv/Pub key +<br/>signature (attestation)
+    Authenticator->>Client: RegistrationResponse<br/>(credential i.e. pub key + signature)
+    Client->>Server: verifyRegistration<br/>(eph. wallet address, RegistrationResponse)
+    Server->>Database: getChallenge(eph. wallet address)
+    Database->>Server: challenge
+    Server->>Server: checkChallenge()
+    Server->>Server: verifyRegistration(RegistrationResponse, challenge)
+    Server->>Client: VerificationResponse
+    Client->>Client: registry eph wallet as encryptor<br/>on GlobalAllowList smartcontract
+```
