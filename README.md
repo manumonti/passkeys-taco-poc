@@ -3,7 +3,7 @@
 This is a Next.js app that implements passkeys using [SimpleWebAuthn](https://github.com/GoogleChromeLabs/simple-webauthn)
 and [TACo](https://github.com/GoogleChromeLabs/taco).
 
-The objective of this POC is to show how to use passkeys for TACo encryptor authentication:
+The objective of this POC is to show how to use passkeys for TACo encryptor authentication.
 
 ## Usage
 
@@ -25,3 +25,4 @@ pnpm dev
 ```
 
 [http://localhost:3000](http://localhost:3000)
+

@@ -41,7 +41,7 @@ export const registerEncryptor = async (encryptorAddress: AddressLike) => {
     authorityWallet
   );
 
-  console.debug(
+  console.log(
     "Registring encryptor address",
     encryptorAddress,
     "on ritual",
@@ -52,8 +52,8 @@ export const registerEncryptor = async (encryptorAddress: AddressLike) => {
     parseInt(process.env.RITUAL_ID),
     [encryptorAddress]
   );
-  console.debug(`TX: https://amoy.polygonscan.com/tx/${tx.hash}/`);
-  console.debug("Waiting for tx confirmation...");
+  console.log(`TX: https://amoy.polygonscan.com/tx/${tx.hash}/`);
+  console.log("Waiting for tx confirmation...");
 
   await tx.wait();
   console.log("✅ Tx confirmed");

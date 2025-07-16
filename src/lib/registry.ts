@@ -20,7 +20,6 @@ export const getRegistrationOptions = async (
   ephemeralWalletAddress: string
 ): Promise<PublicKeyCredentialCreationOptionsJSON> => {
   const challenge = await bcrypt.hash(ephemeralWalletAddress, 10);
-  console.debug("CHALLENGE:", challenge);
 
   const registrationOptionsParameters: GenerateRegistrationOptionsOpts = {
     rpName: "Passkeys TACo PoC",
