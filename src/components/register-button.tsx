@@ -17,11 +17,11 @@ export default function RegisterPasskey({
   setUserCredential,
 }: RegisterPasskeyProps) {
   async function handleClick() {
-    console.debug("Registring new Passkey...");
+    console.debug("New passkey registration process started");
 
     const ephemeralWallet = Wallet.createRandom();
     console.debug(
-      "Ephemeral wallet address (userID for passkey):",
+      "Ephemeral wallet address (passkey's userID):",
       ephemeralWallet.address
     );
 
@@ -38,19 +38,19 @@ export default function RegisterPasskey({
       isoBase64URL.toUTF8String(registrationOptions.user.id)
     );
 
-    console.debug("Starting registration (passkey interaction)...");
+    console.debug("Starting registration (authenticator interaction)...");
     const registrationResponse = await startRegistration({
       optionsJSON: registrationOptions,
     });
     console.debug(
-      "Registration response from passkey:",
+      "Registration response from authenticator:",
       JSON.stringify(registrationResponse, null, 2)
     );
 
     console.debug("Verifying registration...");
     const verificationResponse = await verifyRegistration(
-      registrationResponse,
-      registrationOptions.challenge
+      ephemeralWallet.address,
+      registrationResponse
     );
     console.debug(
       "Verification response from server:",

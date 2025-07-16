@@ -9,24 +9,28 @@ import {
   type PublicKeyCredentialCreationOptionsJSON,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
-import { isoUint8Array } from "@simplewebauthn/server/helpers";
+import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers";
+import {
+  getOrCreateDatabase,
+  removeRegistrationOptions,
+  saveRegistrationOptions,
+} from "./database";
 
 export const getRegistrationOptions = async (
   ephemeralWalletAddress: string
 ): Promise<PublicKeyCredentialCreationOptionsJSON> => {
-  const salt = await bcrypt.genSalt();
-  const challenge = await bcrypt.hash(ephemeralWalletAddress, salt);
+  const challenge = await bcrypt.hash(ephemeralWalletAddress, 10);
+  console.debug("CHALLENGE:", challenge);
 
   const registrationOptionsParameters: GenerateRegistrationOptionsOpts = {
     rpName: "Passkeys TACo PoC",
     rpID: "localhost",
-    userName: ephemeralWalletAddress,
+    userName: ephemeralWalletAddress, // to be shown in passkey popup
     userID: isoUint8Array.fromASCIIString(ephemeralWalletAddress),
     challenge: isoUint8Array.fromASCIIString(challenge),
     userDisplayName: ephemeralWalletAddress,
     timeout: 60000,
     // excludeCredentials: [],
-    // TODO: use algorithms with a good compatibility with solidity
     supportedAlgorithmIDs: [-7, -257],
   };
 
@@ -34,22 +38,44 @@ export const getRegistrationOptions = async (
     registrationOptionsParameters
   );
 
+  // Registration options are saved in the database for later verification
+  saveRegistrationOptions(registrationOptions);
+
   return registrationOptions;
 };
 
 export const verifyRegistration = async (
-  credential: RegistrationResponseJSON,
-  challenge: string
+  ephemeralWalletAddress: string,
+  registrationResponse: RegistrationResponseJSON
 ): Promise<VerifiedRegistrationResponse> => {
-  let verificationResponse: VerifiedRegistrationResponse;
+  const db = await getOrCreateDatabase();
 
-  if (credential == null) {
+  let verificationResponse;
+
+  if (registrationResponse == null) {
     throw new Error("Invalid credentials");
+  }
+
+  const challenge = db.registrationOptions[ephemeralWalletAddress].challenge;
+
+  if (!challenge) {
+    throw new Error(
+      "No challenge found for this ephemeral wallet address in DB"
+    );
+  }
+
+  // Check the ephemeral wallet address provided againt the challenge in DB
+  const challengeCheck = await bcrypt.compare(
+    ephemeralWalletAddress,
+    isoBase64URL.toUTF8String(challenge)
+  );
+  if (!challengeCheck) {
+    throw new Error("Challenge verification failed");
   }
 
   try {
     verificationResponse = await verifyRegistrationResponse({
-      response: credential,
+      response: registrationResponse,
       expectedChallenge: challenge,
       expectedOrigin: "http://localhost:3000",
       expectedRPID: "localhost",
@@ -62,6 +88,8 @@ export const verifyRegistration = async (
   if (!verificationResponse.verified) {
     throw new Error("Registration verification failed");
   }
+
+  removeRegistrationOptions(ephemeralWalletAddress);
 
   return verificationResponse;
 };
