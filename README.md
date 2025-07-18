@@ -50,5 +50,8 @@ sequenceDiagram
     Server->>Server: checkChallenge()
     Server->>Server: verifyRegistration(RegistrationResponse, challenge)
     Server->>Client: VerificationResponse
-    Client->>Client: registry eph wallet as encryptor<br/>on GlobalAllowList smartcontract
+    Server->>Server: registry eph wallet as encryptor<br/>on GlobalAllowList smartcontract
 ```
+
+Note that, in the code, the code run by the server is in the `src/lib` directory,
+while the code run by the client is in the `src/app` directory.
